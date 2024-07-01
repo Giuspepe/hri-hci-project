@@ -47,7 +47,10 @@ dependencies:
   google_mlkit_face_detection: ^0.11.0
   http: ^1.2.1
   dio: ^5.4.3+1
-  
+  dart_openai: ^5.1.0
+  flutter_tts: ^4.0.2
+  dartx: ^1.2.0
+  intersperse: ^2.0.0
 
 dev_dependencies:
   flutter_test:

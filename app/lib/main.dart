@@ -1,5 +1,5 @@
 import 'package:app/providers/model_provider.dart';
-import 'package:app/services/api-keys.dart';
+import 'package:app/services/api_keys.dart';
 import 'package:app/services/name_detection_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,12 +22,11 @@ class EmotionDetectionApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Emotion Detection App',
+      title: 'Emotional Conversation App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      //home: HomeScreen(),
-      initialRoute: '/gallery',
+      home: HomeScreen(),
       routes: {
         '/gallery': (context) => GalleryScreen(),
         '/live-chat': (context) => LiveChatScreen(),

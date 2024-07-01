@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:app/services/name_detection_api.dart';
 import 'package:app/services/name_detection_service.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';

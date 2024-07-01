@@ -1,9 +1,19 @@
 import 'package:app/providers/emotion_detection_result_provider.dart';
+import 'package:app/providers/name_detection_result_provider.dart';
+import 'package:app/widgets/chatbot.dart';
+import 'package:app/widgets/name_prediction_information.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/model_provider.dart';
-import '../widgets/prediction_information.dart';
+import '../widgets/emotion_prediction_information.dart';
+
+final chatScrollControllerProvider = Provider<ScrollController>((ref) {
+  final controller = ScrollController();
+  ref.onDispose(controller.dispose);
+  return controller;
+});
 
 class LiveChatScreen extends ConsumerWidget {
   const LiveChatScreen({super.key});
@@ -22,15 +32,42 @@ class LiveChatScreen extends ConsumerWidget {
         ],
       ),
       body: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(child: Center(child: VideoFeed())),
-          Consumer(builder: (context, ref, _) {
-            final predictions = ref.watch(emotionDetectionResultProvider);
-            if (predictions.valueOrNull?.isEmpty ?? true ) {
-              return const SizedBox.shrink();
-            }
-            return PredictionInformation(predictions: predictions.requireValue);
-          })
+          Row(
+            children: [
+              Flexible(child: VideoFeed()),
+              Flexible(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Consumer(builder: (context, ref, _) {
+                      final detectedNames =
+                          ref.watch(nameDetectionResultProvider);
+                      return Center(
+                        child: NamePredictionInformation(
+                            predictions: detectedNames.valueOrNull ?? []),
+                      );
+                    }),
+                    Consumer(builder: (context, ref, _) {
+                      final predictions =
+                          ref.watch(emotionDetectionResultProvider);
+                      return Center(
+                        child: EmotionPredictionInformation(
+                            predictions: predictions.valueOrNull ?? []),
+                      );
+                    }),
+                  ],
+                ),
+              )
+            ],
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              controller: ref.watch(chatScrollControllerProvider),
+              child: ChatBot(),
+            ),
+          ),
         ],
       ),
     );
@@ -72,9 +109,13 @@ class _CameraControllerNotifier
     final controller =
         CameraController(_selectedCamera!, ResolutionPreset.high);
     await controller.initialize();
+    await controller.lockCaptureOrientation(DeviceOrientation.portraitUp);
     if (!controller.value.isStreamingImages) {
-      controller.startImageStream((CameraImage image) async {
-        await ref
+      controller.startImageStream((CameraImage image) {
+        ref
+            .read(nameDetectionResultProvider.notifier)
+            .predictCameraStream(image);
+        ref
             .read(emotionDetectionResultProvider.notifier)
             .predictCameraStream(image);
       });
@@ -94,10 +135,14 @@ class _CameraControllerNotifier
           CameraController(_selectedCamera!, ResolutionPreset.high);
       await controller.initialize();
       if (!controller.value.isStreamingImages) {
-        controller.startImageStream((CameraImage image) async {
-          await ref
+        controller.startImageStream((CameraImage image)  {
+                      ref
+            .read(nameDetectionResultProvider.notifier)
+            .predictCameraStream(image);
+           ref
               .read(emotionDetectionResultProvider.notifier)
               .predictCameraStream(image);
+
         });
       }
 

@@ -3,13 +3,24 @@ import 'package:app/services/emotion_detection_service.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 
-class PredictionInformation extends StatelessWidget {
+class EmotionPredictionInformation extends StatelessWidget {
   final List<EmotionDetectionResult> predictions;
+  final bool showOnlyFirstFace;
 
-  PredictionInformation({required this.predictions});
+  EmotionPredictionInformation(
+      {required this.predictions, this.showOnlyFirstFace = true});
 
   @override
   Widget build(BuildContext context) {
+    if (predictions.isEmpty) {
+      return Text('No emotions detected',
+          style: TextStyle(color: Colors.black));
+    }
+
+    // Display only information of the first face
+    if (showOnlyFirstFace && predictions.length > 1) {
+      predictions.removeRange(1, predictions.length);
+    }
     final colorMap = generateColorMap(predictions.length);
     return Container(
       color: Colors.black54,
@@ -24,12 +35,17 @@ class PredictionInformation extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Face $index',
-                            style:  TextStyle(
-                                color: colorMap[index], fontSize: 24),
+                            'Emotions:',
+                            style: TextStyle(color: Colors.white, fontSize: 24),
                           ),
+                          if (!showOnlyFirstFace)
+                            Text(
+                              'Face $index',
+                              style: TextStyle(
+                                  color: colorMap[index], fontSize: 24),
+                            ),
                           ...face.emotion.entries.map((entry) => Text(
-                                '${entry.key.padRight(8)} ${entry.value.toStringAsFixed(10).padLeft(13)} %',
+                                '${entry.key.padRight(8)} ${entry.value.toStringAsFixed(2).padLeft(6)} %',
                                 style: TextStyle(
                                   fontFamily: 'monospace',
                                   color: entry.key == face.dominantEmotion
@@ -44,7 +60,6 @@ class PredictionInformation extends StatelessWidget {
     );
   }
 }
-
 
 List<Color> generateColorMap(int numColors) {
   List<Color> colors = [];

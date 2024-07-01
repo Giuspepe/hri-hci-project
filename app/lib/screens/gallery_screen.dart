@@ -10,7 +10,7 @@ import 'package:app/services/name_detection_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import '../widgets/prediction_information.dart';
+import '../widgets/emotion_prediction_information.dart';
 
 class GalleryScreen extends ConsumerStatefulWidget {
   @override
@@ -83,7 +83,7 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
                     if (predictions.valueOrNull?.isNotEmpty ?? false)
                       SizedBox(
                         width: double.infinity,
-                        child: PredictionInformation(
+                        child: EmotionPredictionInformation(showOnlyFirstFace: false,
                             predictions: predictions.requireValue),
                       ),
                   ],

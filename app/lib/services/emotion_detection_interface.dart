@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:app/services/emotion_detection_api.dart';
 import 'package:app/services/emotion_detection_service.dart';
 import 'package:camera/camera.dart';
 

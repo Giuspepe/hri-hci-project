@@ -24,9 +24,6 @@ class EmotionDetectionNotifier
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(
         () => _emotionDetectionService.predictFromImage(image));
-    state.mapOrNull(error: (error) {
-      print('Error processing image: $error');
-    });
   }
   
 
